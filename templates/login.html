@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Realm Board</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-800 min-h-screen flex items-center justify-center px-4">
+
+<div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-8">
+  <div class="text-center mb-6">
+    <div class="text-5xl mb-3">⛏</div>
+    <h1 class="text-2xl font-bold text-gray-800">Realm Board</h1>
+    <p class="text-sm text-gray-500 mt-1">Enter the site password to continue</p>
+  </div>
+
+  {% if error %}
+  <div class="mb-4 bg-red-50 border border-red-300 text-red-700 text-sm rounded px-3 py-2">
+    {{ error }}
+  </div>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('login', next=request.args.get('next', '')) }}">
+    <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">Password</label>
+    <input
+      type="password"
+      name="password"
+      autofocus
+      class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 mb-4"
+      placeholder="Site password"
+    />
+    <button type="submit"
+      class="w-full bg-green-700 hover:bg-green-600 text-white font-semibold py-2 rounded transition-colors">
+      Enter
+    </button>
+  </form>
+</div>
+
+</body>
+</html>

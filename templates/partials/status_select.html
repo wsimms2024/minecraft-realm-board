@@ -1,0 +1,14 @@
+<select id="status-{{ project.id }}"
+  name="status"
+  hx-post="{{ url_for('update_status', project_id=project.id) }}"
+  hx-trigger="change"
+  hx-target="#status-{{ project.id }}"
+  hx-swap="outerHTML"
+  class="rounded border text-xs font-semibold px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors
+    {% if project.status == 'in_progress' %}bg-blue-50 border-blue-300 text-blue-700
+    {% elif project.status == 'done' %}bg-green-50 border-green-300 text-green-700
+    {% else %}bg-gray-50 border-gray-300 text-gray-600{% endif %}">
+  <option value="not_started" {% if project.status == 'not_started' %}selected{% endif %}>⬜ Not Started</option>
+  <option value="in_progress" {% if project.status == 'in_progress' %}selected{% endif %}>🔵 In Progress</option>
+  <option value="done" {% if project.status == 'done' %}selected{% endif %}>✅ Done</option>
+</select>

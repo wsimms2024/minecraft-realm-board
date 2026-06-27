@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if project else 'New' }} Project{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-2xl font-bold text-gray-800 mb-6">
+    {{ '✏️ Edit Project' if project else '+ Add Board Project' }}
+  </h1>
+
+  <div class="card p-6">
+    <form method="post"
+      action="{{ url_for('edit_board_project', project_id=project.id) if project else url_for('new_board_project') }}"
+      class="space-y-5">
+
+      <div>
+        <label class="label">Title *</label>
+        <input type="text" name="title" required
+          value="{{ project.title if project else '' }}"
+          class="input" placeholder="e.g. Iron Farm" />
+      </div>
+
+      <div>
+        <label class="label">Category</label>
+        <select name="category" class="input">
+          <option value="">— Select category —</option>
+          {% for cat in all_categories %}
+          <option value="{{ cat }}" {% if project and project.category == cat %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+          <option value="Other" {% if project and project.category == 'Other' %}selected{% endif %}>Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="label">Description</label>
+        <textarea name="description" rows="3" class="input"
+          placeholder="What is this build?">{{ project.description if project else '' }}</textarea>
+      </div>
+
+      <div>
+        <label class="label">Image URL (optional)</label>
+        <input type="url" name="image_url"
+          value="{{ project.image_url if project else '' }}"
+          class="input" placeholder="https://i.imgur.com/example.png" />
+        <p class="text-xs text-gray-400 mt-1">Paste an imgur, Discord CDN, or any direct image link.</p>
+      </div>
+
+      <div>
+        <label class="label">Materials Checklist</label>
+        <textarea name="materials" rows="5" class="input font-mono text-xs"
+          placeholder="One item per line:&#10;64x Iron Ingot&#10;Hopper x8&#10;Redstone Dust">{{ current_materials }}</textarea>
+        <p class="text-xs text-gray-400 mt-1">One item per line. You can check them off on the board.</p>
+      </div>
+
+      <div>
+        <label class="label">Assign to</label>
+        <div class="flex flex-wrap gap-2">
+          {% for friend in friends %}
+          <label class="flex items-center gap-1.5 cursor-pointer
+            px-3 py-1.5 rounded-full text-sm border transition-colors
+            has-[:checked]:bg-green-100 has-[:checked]:border-green-400 has-[:checked]:text-green-800
+            bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100">
+            <input type="checkbox" name="assigned_friends" value="{{ friend.id }}"
+              {% if friend.id in assigned_friend_ids %}checked{% endif %}
+              class="sr-only" />
+            {{ friend.name }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-primary">
+          {{ 'Save Changes' if project else 'Add to Board' }}
+        </button>
+        <a href="{{ url_for('board') }}" class="btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

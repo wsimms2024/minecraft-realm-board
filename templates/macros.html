@@ -1,0 +1,28 @@
+{% macro category_badge(category) %}
+{% set color_map = {
+  'Farms': 'bg-green-100 text-green-800',
+  'Redstone & Tech': 'bg-red-100 text-red-800',
+  'Aesthetic & Decoration': 'bg-purple-100 text-purple-800',
+  'Infrastructure & Travel': 'bg-blue-100 text-blue-800',
+  'Defense & Utility': 'bg-orange-100 text-orange-800',
+} %}
+<span class="inline-block px-2 py-0.5 rounded text-xs font-semibold {{ color_map.get(category, 'bg-gray-100 text-gray-700') }}">
+  {{ category }}
+</span>
+{% endmacro %}
+
+{% macro status_badge(status) %}
+{% set color_map = {
+  'not_started': 'bg-gray-100 text-gray-600',
+  'in_progress': 'bg-blue-100 text-blue-700',
+  'done': 'bg-green-100 text-green-700',
+} %}
+{% set label_map = {
+  'not_started': 'Not Started',
+  'in_progress': 'In Progress',
+  'done': 'Done',
+} %}
+<span class="inline-block px-2 py-0.5 rounded text-xs font-semibold {{ color_map.get(status, 'bg-gray-100 text-gray-600') }}">
+  {{ label_map.get(status, status) }}
+</span>
+{% endmacro %}

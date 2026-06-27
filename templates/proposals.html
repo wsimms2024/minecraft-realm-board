@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% from "macros.html" import category_badge %}
+{% block title %}Proposals{% endblock %}
+{% block content %}
+
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+  <h1 class="text-2xl font-bold text-gray-800">📋 Proposed Projects</h1>
+  <a href="{{ url_for('new_proposal') }}" class="btn-primary">+ New Proposal</a>
+</div>
+
+{% if projects %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for project in projects %}
+  <div class="card p-4 flex flex-col gap-3">
+    <!-- Header -->
+    <div class="flex items-start justify-between gap-2">
+      <div>
+        <div class="font-semibold text-gray-800">{{ project.title }}</div>
+        <div class="mt-1">{{ category_badge(project.category) }}</div>
+      </div>
+      <div class="flex gap-1 shrink-0">
+        <a href="{{ url_for('edit_proposal', project_id=project.id) }}" class="btn-secondary btn-sm">Edit</a>
+        <form method="post" action="{{ url_for('delete_proposal', project_id=project.id) }}"
+          onsubmit="return confirm('Delete this proposal?')">
+          <button type="submit" class="btn-danger btn-sm">✕</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Description -->
+    {% if project.description %}
+    <p class="text-sm text-gray-600">{{ project.description }}</p>
+    {% endif %}
+
+    <!-- Proposed by -->
+    <div class="text-xs text-gray-400">
+      Proposed by: <span class="text-gray-600 font-medium">{{ project.proposed_by.name if project.proposed_by else '—' }}</span>
+      · {{ project.created_at.strftime('%b %d') if project.created_at }}
+    </div>
+
+    <!-- Votes -->
+    {% set voted_ids = get_voted_ids(project) %}
+    {% include "partials/vote_section.html" %}
+
+    <!-- Promote -->
+    <div class="pt-1 border-t border-gray-100">
+      <form method="post" action="{{ url_for('promote_proposal', project_id=project.id) }}">
+        <button type="submit" class="btn-primary w-full justify-center text-center">
+          ⬆ Promote to Board
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card p-12 text-center text-gray-400">
+  <div class="text-4xl mb-3">📭</div>
+  <div>No proposals yet.</div>
+  <div class="mt-2">
+    <a href="{{ url_for('new_proposal') }}" class="btn-primary mt-3 inline-block">Create one</a>
+    or browse <a href="{{ url_for('ideas') }}" class="text-green-700 underline">build ideas</a>.
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

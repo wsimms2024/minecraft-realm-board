@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "macros.html" import category_badge, status_badge %}
+{% block title %}Project Board{% endblock %}
+{% block content %}
+
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+  <h1 class="text-2xl font-bold text-gray-800">🗂 Project Board</h1>
+  <a href="{{ url_for('new_board_project') }}" class="btn-primary">+ Add Project</a>
+</div>
+
+<!-- Filters -->
+<form id="filter-form"
+  hx-get="{{ url_for('board') }}"
+  hx-target="#board-cards"
+  hx-push-url="true"
+  hx-trigger="change"
+  class="flex flex-wrap gap-2 mb-6">
+
+  <select name="status" class="input !w-auto text-sm">
+    <option value="" {% if not status_filter %}selected{% endif %}>All Statuses</option>
+    <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
+    <option value="not_started" {% if status_filter == 'not_started' %}selected{% endif %}>Not Started</option>
+    <option value="done" {% if status_filter == 'done' %}selected{% endif %}>Done</option>
+  </select>
+
+  <select name="category" class="input !w-auto text-sm">
+    <option value="" {% if not category_filter %}selected{% endif %}>All Categories</option>
+    {% for cat in board_categories %}
+    <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="assigned" class="input !w-auto text-sm">
+    <option value="" {% if not assigned_filter %}selected{% endif %}>All Friends</option>
+    {% for friend in friends %}
+    <option value="{{ friend.id }}" {% if assigned_filter == friend.id|string %}selected{% endif %}>
+      {{ friend.name }}
+    </option>
+    {% endfor %}
+  </select>
+
+  {% if status_filter or category_filter or assigned_filter %}
+  <a href="{{ url_for('board') }}" class="btn-secondary text-sm">✕ Clear</a>
+  {% endif %}
+</form>
+
+<div id="board-cards">
+  {% include "partials/board_cards.html" %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "macros.html" import category_badge %}
+{% block title %}Ideas{% endblock %}
+{% block content %}
+
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+  <h1 class="text-2xl font-bold text-gray-800">💡 Build Ideas</h1>
+  <a href="{{ url_for('new_proposal') }}" class="btn-primary">+ Propose custom idea</a>
+</div>
+
+<!-- Category filter -->
+<div id="category-filter" class="flex flex-wrap gap-2 mb-6">
+  <a href="{{ url_for('ideas', category='All') }}"
+    hx-get="{{ url_for('ideas', category='All') }}"
+    hx-target="#ideas-content"
+    hx-push-url="true"
+    class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors
+      {% if category_filter == 'All' %}bg-green-700 text-white{% else %}bg-white text-gray-600 border border-gray-300 hover:bg-gray-50{% endif %}">
+    All
+  </a>
+  {% for cat in all_categories %}
+  <a href="{{ url_for('ideas', category=cat) }}"
+    hx-get="{{ url_for('ideas', category=cat) }}"
+    hx-target="#ideas-content"
+    hx-push-url="true"
+    class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors
+      {% if category_filter == cat %}bg-green-700 text-white{% else %}bg-white text-gray-600 border border-gray-300 hover:bg-gray-50{% endif %}">
+    {{ cat }}
+  </a>
+  {% endfor %}
+</div>
+
+<div id="ideas-content">
+  {% include "partials/ideas_grid.html" %}
+</div>
+
+{% endblock %}

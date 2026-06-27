@@ -1,0 +1,21 @@
+<form id="assign-section-{{ project.id }}"
+  hx-post="{{ url_for('update_assignments', project_id=project.id) }}"
+  hx-target="#assign-section-{{ project.id }}"
+  hx-swap="outerHTML"
+  hx-trigger="change"
+  class="flex flex-wrap gap-2">
+  {% for friend in friends %}
+  {% set is_assigned = friend.id in assigned_ids %}
+  <label class="flex items-center gap-1.5 cursor-pointer
+    px-2 py-0.5 rounded-full text-xs font-medium border transition-colors
+    {% if is_assigned %}bg-green-100 border-green-300 text-green-800{% else %}bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100{% endif %}">
+    <input type="checkbox" name="friend_ids" value="{{ friend.id }}"
+      {% if is_assigned %}checked{% endif %}
+      class="sr-only" />
+    {% if is_assigned %}✓ {% endif %}{{ friend.name }}
+  </label>
+  {% endfor %}
+  {% if not friends %}
+  <span class="text-xs text-gray-400 italic">No friends added yet</span>
+  {% endif %}
+</form>

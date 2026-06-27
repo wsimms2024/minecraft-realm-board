@@ -1,0 +1,12 @@
+<li id="material-{{ item.id }}" class="flex items-center gap-2 text-sm">
+  <input type="checkbox"
+    hx-post="{{ url_for('toggle_material', project_id=project_id, item_id=item.id) }}"
+    hx-trigger="change"
+    hx-target="#material-{{ item.id }}"
+    hx-swap="outerHTML"
+    {% if item.gathered %}checked{% endif %}
+    class="rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer" />
+  <span class="{% if item.gathered %}line-through text-gray-400{% else %}text-gray-700{% endif %}">
+    {{ item.text }}
+  </span>
+</li>

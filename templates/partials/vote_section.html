@@ -1,0 +1,15 @@
+<div id="vote-section-{{ project.id }}" class="flex flex-wrap gap-1.5 items-center">
+  <span class="text-xs text-gray-400 mr-1">Votes:</span>
+  {% for friend in friends %}
+  <button
+    hx-post="{{ url_for('vote_proposal', project_id=project.id) }}"
+    hx-vals='{"friend_id": "{{ friend.id }}"}'
+    hx-target="#vote-section-{{ project.id }}"
+    hx-swap="outerHTML"
+    class="px-2 py-0.5 rounded-full text-xs font-medium transition-colors
+      {% if friend.id in voted_ids %}bg-green-600 text-white{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
+    {% if friend.id in voted_ids %}✓ {% endif %}{{ friend.name }}
+  </button>
+  {% endfor %}
+  <span class="text-xs text-gray-400 ml-1">{{ voted_ids|length }} vote{{ 's' if voted_ids|length != 1 }}</span>
+</div>
