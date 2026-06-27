@@ -1,0 +1,26 @@
+{% from "macros.html" import category_badge %}
+
+{% if error %}
+<div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded p-3">
+  Failed to generate ideas: {{ error }}
+</div>
+{% elif ideas %}
+<div class="space-y-2">
+  <div class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-2">AI-generated suggestions</div>
+  {% for idea in ideas %}
+  <div class="card p-3 flex items-start justify-between gap-3 border-l-4 border-green-400">
+    <div class="flex-1 min-w-0">
+      <div class="font-semibold text-gray-800 text-sm">{{ idea.title }}</div>
+      <div class="mt-0.5">{{ category_badge(idea.category) }}</div>
+      {% if idea.description %}
+      <div class="text-xs text-gray-500 mt-1">{{ idea.description }}</div>
+      {% endif %}
+    </div>
+    <a href="{{ url_for('new_proposal', title=idea.title, category=idea.category) }}"
+      class="btn-primary btn-sm shrink-0">Propose</a>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-sm text-gray-400 italic">No ideas generated. Try again.</div>
+{% endif %}

@@ -1,7 +1,9 @@
+import json
 import os
 from datetime import datetime
 from functools import wraps
 
+import anthropic
 from flask import Flask, abort, redirect, render_template, request, session, url_for
 from models import (
     BaseInfo,
@@ -233,6 +235,66 @@ def create_app():
             all_categories=all_categories,
             category_filter=category_filter,
             friends=friends,
+        )
+
+    @app.route("/ideas/generate", methods=["POST"])
+    @login_required
+    def generate_ideas():
+        category_hint = request.form.get("category", "").strip()
+        existing_titles = [i.title for i in Idea.query.with_entities(Idea.title).all()]
+
+        CATEGORIES = [
+            "Farms", "Redstone & Tech", "Aesthetic & Decoration",
+            "Infrastructure & Travel", "Defense & Utility",
+        ]
+        category_line = (
+            f'Focus on the "{category_hint}" category.'
+            if category_hint and category_hint != "All"
+            else f"Pick freely from these categories: {', '.join(CATEGORIES)}."
+        )
+
+        prompt = f"""You are helping a group of friends brainstorm Minecraft build ideas for their shared realm.
+Generate exactly 5 creative, specific build ideas. {category_line}
+
+Avoid these already-existing ideas: {', '.join(existing_titles[:40])}.
+
+Respond with a JSON array of exactly 5 objects. Each object must have these keys:
+- "title": short name (3-6 words)
+- "category": one of {json.dumps(CATEGORIES)}
+- "description": one sentence describing the build and why it's useful or fun
+
+Respond with ONLY the JSON array, no markdown, no explanation."""
+
+        try:
+            client = anthropic.Anthropic(
+                api_key=os.environ.get("ANTHROPIC_API_KEY")
+            )
+            message = client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=800,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            raw = message.content[0].text.strip()
+            # Strip markdown code fences if present
+            if raw.startswith("```"):
+                raw = raw.split("```")[1]
+                if raw.startswith("json"):
+                    raw = raw[4:]
+            ideas = json.loads(raw)
+            # Validate structure
+            ideas = [
+                i for i in ideas
+                if isinstance(i, dict) and "title" in i and "category" in i
+            ][:5]
+        except Exception as e:
+            ideas = []
+            error = str(e)
+            return render_template(
+                "partials/generated_ideas.html", ideas=ideas, error=error
+            )
+
+        return render_template(
+            "partials/generated_ideas.html", ideas=ideas, error=None
         )
 
     # -----------------------------------------------------------------------

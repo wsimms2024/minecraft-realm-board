@@ -5,8 +5,23 @@
 
 <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
   <h1 class="text-2xl font-bold text-gray-800">💡 Build Ideas</h1>
-  <a href="{{ url_for('new_proposal') }}" class="btn-primary">+ Propose custom idea</a>
+  <div class="flex gap-2">
+    <button
+      hx-post="{{ url_for('generate_ideas') }}"
+      hx-include="#category-filter-value"
+      hx-target="#ai-ideas"
+      hx-swap="innerHTML"
+      hx-indicator="#generate-spinner"
+      class="btn-secondary">
+      <span id="generate-spinner" class="htmx-indicator mr-1">⏳</span>
+      ✨ Generate Ideas
+    </button>
+    <a href="{{ url_for('new_proposal') }}" class="btn-primary">+ Propose custom idea</a>
+  </div>
 </div>
+
+<!-- Hidden field carries the active category filter into the generate request -->
+<input type="hidden" id="category-filter-value" name="category" value="{{ category_filter }}" />
 
 <!-- Category filter -->
 <div id="category-filter" class="flex flex-wrap gap-2 mb-6">
@@ -29,6 +44,9 @@
   </a>
   {% endfor %}
 </div>
+
+<!-- AI-generated ideas drop in here -->
+<div id="ai-ideas" class="mb-6"></div>
 
 <div id="ideas-content">
   {% include "partials/ideas_grid.html" %}
