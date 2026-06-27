@@ -4,6 +4,9 @@ from datetime import datetime
 from functools import wraps
 
 import anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
 from flask import Flask, abort, redirect, render_template, request, session, url_for
 from models import (
     BaseInfo,
